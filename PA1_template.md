@@ -5,7 +5,8 @@
 
 * ##### Histogram of the total number of steps per day
 
-```{r,echo = TRUE}
+
+```r
 data <- read.csv("activity.csv")
 dataBackUp <- data
 
@@ -22,12 +23,26 @@ for(i in 1:length(k)){
 hist(df$b,xlab = "Total number of steps per day",main="Histogram of total number of steps per day")
 ```
 
+![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png) 
+
 
 * ##### Mean and Median of the steps taken per day
 
-```{r,echo=TRUE}
+
+```r
 mean(df$b)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 median(df$b)
+```
+
+```
+## [1] 10395
 ```
 
   
@@ -36,7 +51,8 @@ median(df$b)
 
 * ##### Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r,echo=TRUE}
+
+```r
 m <- split(data,data$interval)
 
 df3 <- data.frame(x = numeric(), y = numeric())
@@ -51,10 +67,17 @@ for(i in 1:length(m)){
 plot(df3$a,df3$b,type = "l",main="Time series plot",xlab="Interval",ylab="Average Number of Steps taken")
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 * ##### Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r.echo=TRUE}
+
+```r
 df3[which.max(df3$b),]$a
+```
+
+```
+## [1] '835'
 ```
 
 
@@ -62,15 +85,21 @@ df3[which.max(df3$b),]$a
 
 * ##### Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r,echo=TRUE}
+
+```r
 length(which(is.na(data)))
+```
+
+```
+## [1] 2304
 ```
 
   
   
 * ##### Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc
 
-```{r.echo=TRUE}
+
+```r
 naData <- which(is.na(data))
 
 for(i in 1:length(naData)){
