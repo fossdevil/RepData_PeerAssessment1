@@ -1,9 +1,9 @@
-# Peer Assignment 1
+# Peer Assessment 1
 
 
 ### 1. What is mean total number of steps taken per day?    
 
-* ##### Histogram of the total number of steps per day
+* Histogram of the total number of steps per day
 
 
 ```r
@@ -26,7 +26,7 @@ hist(df$b,xlab = "Total number of steps per day",main="Histogram of total number
 ![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png) 
 
 
-* ##### Mean and Median of the steps taken per day
+* Mean and Median of the steps taken per day
 
 
 ```r
@@ -49,7 +49,7 @@ median(df$b)
 
 ### 2. What is the average daily activity pattern?
 
-* ##### Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+* Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 
 ```r
@@ -69,7 +69,7 @@ plot(df3$a,df3$b,type = "l",main="Time series plot",xlab="Interval",ylab="Averag
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
-* ##### Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+* Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
 ```r
@@ -83,7 +83,7 @@ df3[which.max(df3$b),]$a
 
 ### 3. Imputing missing values
 
-* ##### Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+* Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 
 ```r
@@ -96,15 +96,111 @@ length(which(is.na(data)))
 
   
   
-* ##### Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc
+* Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc
 
 
 ```r
 naData <- which(is.na(data))
 
+## Using mean value of steps on 5 minute intervals
 for(i in 1:length(naData)){
   namDat <- data$interval[naData[i]]
   data$steps[naData[i]] <- mean(m[as.character(namDat)][[1]]$steps,na.rm = TRUE)
 }
 ```
 
+* Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+1. The values do differ from the first part.  
+2. Impact of imputting missing data : both mean and median have increased.  
+3. We get the following data  
+
+
+```r
+k <- split(data,data$date)
+df <- data.frame(x = character(), y = numeric(),stringsAsFactors = FALSE)
+
+for(i in 1:length(k)){
+  a <- as.character(k[[i]][1,2])
+  b <- sum(k[[i]]$steps,na.rm = TRUE)
+  df1 <- data.frame(a,b)
+  df <- rbind(df,df1)
+}
+
+hist(df$b,xlab = "Total number of steps per day",main="Histogram of total number of steps per day")
+```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
+
+* Mean and Median of the steps taken per day
+
+
+```r
+mean(df$b)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(df$b)
+```
+
+```
+## [1] 10766.19
+```
+
+### 4. Are there differences in activity patterns between weekdays and weekends?
+
+* Create a new factor variable in the dataset with two levels _weekday_ and _weekend_ indicating whether a given date is a weekday or weekend day
+
+
+```r
+data$Week <- weekdays(strptime(as.character(data$date),"%Y-%m-%d"))
+for(i in 1:nrow(data)){
+  if(data[i,]$Week == "Sunday" | data[i,]$Week == "Saturday"){
+    data[i,]$Week <- "weekend"
+  }
+  else{
+    data[i,]$Week <- "weekday"
+  }
+} 
+
+data$Week <- factor(data$Week,levels = c("weekday","weekend"))
+```
+
+* Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
+
+
+```r
+m <- split(data,data$interval)
+
+df4 <- data.frame(x = numeric(), y = numeric())
+df6 <- data.frame(x = numeric(), y = numeric())
+
+for(i in 1:length(m)){
+  a <- as.numeric_version(m[[i]]$interval[1])
+  b <- mean(m[[i]][which(m[[i]]$Week == "weekday"),]$steps,na.rm = TRUE)
+  df5 <-  data.frame(a,b)
+  df4 <- rbind(df4,df5)
+}
+
+for(i in 1:length(m)){
+  a <- as.numeric_version(m[[i]]$interval[1])
+  b <- mean(m[[i]][which(m[[i]]$Week == "weekend"),]$steps,na.rm = TRUE)
+  df7 <-  data.frame(a,b)
+  df6 <- rbind(df6,df7)
+}
+
+par(mfrow=c(2,1), mar=c(0,0,2,0), oma=c(4,4,1,1))
+par(cex = 0.6)
+par(tcl = -0.25)
+par(mgp = c(2, 0.6, 0))
+plot(df4$a,df4$b, type = "l",col= "blue",xaxt= 'n',main="weekday")
+plot(df6$a,df6$b, type = "l",col= "blue",main="weekend")
+mtext("Interval", side = 1, outer = TRUE,cex = 0.7,line = 2.2)
+mtext("Number of Steps", side = 2, outer = TRUE,cex = 0.7,line = 2.2)
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
